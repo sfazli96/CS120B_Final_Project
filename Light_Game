@@ -29,10 +29,10 @@ typedef struct _lights
 const lights l_list[][8] =
 {
 	{
-		{0x01, 0x01},
-		{0x02, 0x02},
-		{0x04, 0x04},
-		{0x08, 0x08},
+		{0x81, 0x01}, 
+		{0x42, 0x02},
+		{0x24, 0x04},
+		{0x18, 0x08},
 		{0x10, 0x10},
 		{0x20, 0x20},
 		{0x40, 0x40},
@@ -149,10 +149,8 @@ int main(void) {
 	shift2Init();
 	//SNES_init();
 	//LCD_init();
-	//LCD_ClearScreen();
 	while (1)
 	{
-		//LCD_DisplayString(1,"HELLO");
 		if(state == 0)
 		{
 			shift2Write(0xFF);
@@ -162,8 +160,8 @@ int main(void) {
 		}
 		else
 		{
-			shift2Write(0xFF & (~(l_list[j][i].row)) );
-			shiftWrite(0x00 | (l_list[j][i].column));
+			shift2Write(0xFF & (~(l_list[0][i].row)) );
+			shiftWrite(0x00 | (l_list[0][i].column));
 			state = 0;
 		}
 		if(i >= 8)
@@ -186,9 +184,11 @@ int main(void) {
 				j = 0;
 			}
 		}
-		shift2Write(0xFF); //& (~(l_list[j][i].row)) );
-		shiftWrite(0x00); //| (l_list[j][i].column));
+		//shift2Write(0xFF); //& (~(l_list[j][i].row)) );
+		//shiftWrite(0x00); //| (l_list[j][i].column));
 		//Tick();
+		while(!TimerFlag);
+		TimerFlag = 0;
 	}
 	return 0;
 	
