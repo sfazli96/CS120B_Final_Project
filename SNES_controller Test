@@ -1,0 +1,47 @@
+// Sameh Fazli 
+// CS120B Final Project 
+#include <avr/io.h>
+#include "snes.c"
+#include "io.c"
+#include "timer.h"
+int main(void)
+{
+	DDRA = 0x03; PORTA = 0x00; //input
+	DDRD = 0xFF; PORTD = 0x00; //output
+	DDRC = 0xFF; PORTC = 0x00; //output
+	
+	unsigned short button = 0x0000;
+	unsigned char out;
+
+	SNES_init();
+	LCD_init();
+	TimerSet(1000);
+	TimerOn();
+	out = ' ';
+	while (1) {
+		//out = 0x00;
+		LCD_Cursor(1);
+		button = (SNES_Read());
+		// if(!button){
+		//if((button & 0) == 0) out = 0x00; 
+		if((button & 16) == 16) out = 'R'; //"R";
+		if((button & 32) == 32) out = 'L'; //"L";
+		if((button & 64) == 64) out = 'X'; //"X";
+		if((button & 128) == 128) out = 'A'; //"A";
+		if((button & 256) == 256) out = 'r'; //"Right";
+		if((button & 512) == 512) out = 'l'; //"Left";
+		if((button & 1024) == 1024) out = 'D'; //"Down";
+		if((button & 2048) == 2048) out = 'U'; //"Up";
+		if((button & 4096) == 4096) out = 'S'; //"Start";
+		if((button & 8192) == 8192) out = 's'; //"Select";
+		if((button & 16384) == 16384) out = 'Y'; //"Y";
+		if((button & 32768) == 32768) out = 'B'; //"B";
+		//}
+		//LCD_WriteData(button);
+		//else out = 0xFF; "None";
+		while(!TimerFlag);
+		TimerFlag = 0;
+		LCD_WriteData(out);
+		//LCD_ClearScreen();
+	}
+}
