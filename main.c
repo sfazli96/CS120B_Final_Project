@@ -1,197 +1,70 @@
 /*
  * sfazl001_cs120_Final_project_demo1.c
- *
  * Created: 2/25/2020 4:23:37 PM
- * Author : sfazl001 Sameh Fazli 
- */ 
-
+ *	Author: Sameh Fazli
+ *	Lab Section:
+ *	Assignment: CS120b Final Project 
+ *	Exercise Description: [optional - include for your own benefit]
+ *	I acknowledge all content contained herein, excluding template or example
+ *	code, is my own original work.
+ */
 #include <avr/io.h>
 #include "shiftregister_columns.h"
 #include "shiftRegister_Rows.h"
 #include "timer.h"
 #include "io.c"
 #include "bit.h"
-//#include "snes.c"
 #include "scheduler.h"
-
-
-//#include "Test_For_matrix.h"
-
+#include "Light_array.h"
+#include "Led_matrix.h"
+//#include "snes.c"
+#define TASK_SIZE 1
+//period of timer: default 50ms
+const unsigned long tasksPeriod = 50;
+const unsigned char tasksSize = TASK_SIZE;
 #ifdef _SIMULATE_
 #endif
 
-typedef struct _lights
-{
-	uint8_t row;
-	uint8_t column;
-} lights;
-
-const lights l_list[][8] =
-{
-	{
-		{0x81, 0x01}, 
-		{0x42, 0x02},
-		{0x24, 0x04},
-		{0x18, 0x08},
-		{0x10, 0x10},
-		{0x20, 0x20},
-		{0x40, 0x40},
-		{0x80, 0x80}
-	},
-
-	{
-		{0x02, 0x01},
-		{0x04, 0x02},
-		{0x08, 0x04},
-		{0x10, 0x08},
-		{0x20, 0x10},
-		{0x40, 0x20},
-		{0x80, 0x40},
-		{0x00, 0x00}
-	},
-
-	{
-		{0x04, 0x01},
-		{0x08, 0x02},
-		{0x10, 0x04},
-		{0x20, 0x08},
-		{0x40, 0x10},
-		{0x80, 0x20},
-		{0x00, 0x00},
-		{0x00, 0x00}
-	},
-
-	{
-		{0x08, 0x01},
-		{0x10, 0x02},
-		{0x20, 0x04},
-		{0x40, 0x08},
-		{0x80, 0x10},
-		{0x00, 0x00},
-		{0x00, 0x00},
-		{0x00, 0x00}
-	},
-
-	{
-		{0x10, 0x01},
-		{0x20, 0x02},
-		{0x40, 0x04},
-		{0x80, 0x08},
-		{0x00, 0x00},
-		{0x00, 0x00},
-		{0x00, 0x00},
-		{0x00, 0x00}
-	},
-
-	{
-		{0x20, 0x01},
-		{0x40, 0x02},
-		{0x80, 0x04},
-		{0x00, 0x08},
-		{0x00, 0x10},
-		{0x00, 0x20},
-		{0x00, 0x40},
-		{0x00, 0x80}
-	},
-
-	{
-		{0x40, 0x01},
-		{0x80, 0x02},
-		{0x00, 0x04},
-		{0x00, 0x08},
-		{0x00, 0x10},
-		{0x00, 0x20},
-		{0x00, 0x40},
-		{0x00, 0x80}
-	},
-
-	{
-		{0x80, 0x01},
-		{0x00, 0x02},
-		{0x00, 0x04},
-		{0x00, 0x08},
-		{0x00, 0x10},
-		{0x00, 0x20},
-		{0x00, 0x40},
-		{0x00, 0x80}
-	},
-
-	{
-		{0x00, 0x01},
-		{0x00, 0x02},
-		{0x00, 0x04},
-		{0x00, 0x08},
-		{0x00, 0x10},
-		{0x00, 0x20},
-		{0x00, 0x40},
-		{0x00, 0x80}
-	},
-};
 
 int main(void) {
-	//    //output of columns
-	    //DDRC = 0xFF;
-	    //PORTC = 0x00;
 	
-	//set port A as output columns
-	    //DDRD = 0xFF;
-	   // PORTD = 0x00;
-	//set period timer
 	TimerSet(1);
 	//initialize timer
 	TimerOn();
-	uint8_t i = 0;
-	uint8_t j = 0;
-	uint16_t k = 0;
-	uint8_t state = 0;
 	//initialize shift register
 	shiftInit();
 	shift2Init();
 	//SNES_init();
 	//LCD_init();
-	while (1)
-	{
-		if(state == 0)
-		{
-			shift2Write(0xFF);
-			shiftWrite(0x00);
-			state = 1;
-			++i;
-		}
-		else
-		{
-			shift2Write(0xFF & (~(l_list[0][i].row)) );
-			shiftWrite(0x00 | (l_list[0][i].column));
-			state = 0;
-		}
-		if(i >= 8)
-		{
-			i = 0;
-		}
-		if(k < 500)
-		{
-			++k;
-		}
-		else
-		{
-			k=0;
-			if(j < 8)
-			{
-				j++;
+	static task task1;
+	task *tasks[] = { &task1 };
+	const unsigned short numTasks = sizeof(tasks)/sizeof(task*);
+
+	// Task 1 (Will show an output on the LED Matrix)
+	task1.state = display;//Task initial state.
+	task1.period = 50;//Task Period.
+	task1.elapsedTime = task1.period;//Task current elapsed time.
+	task1.TickFct = &LED_Matrix;//Function pointer for the tick.
+	
+	// Set the timer and turn it on
+	TimerSet(1);
+	TimerOn();
+
+	unsigned short i; // Scheduler for-loop iterator
+	while(1) {
+		for ( i = 0; i < numTasks; i++ )
+		{ // Scheduler code
+			if ( tasks[i]->elapsedTime >= tasks[i]->period )
+			{ // Task is ready to tick
+				tasks[i]->state = tasks[i]->TickFct(tasks[i]->state); // Set next state
+				tasks[i]->elapsedTime = 0; // Reset the elapsed time for next tick.
 			}
-			else
-			{
-				j = 0;
-			}
+			tasks[i]->elapsedTime += tasksPeriod;
 		}
-		//shift2Write(0xFF); //& (~(l_list[j][i].row)) );
-		//shiftWrite(0x00); //| (l_list[j][i].column));
-		//Tick();
 		while(!TimerFlag);
 		TimerFlag = 0;
 	}
 	return 0;
-	
 }
 
 
