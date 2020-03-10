@@ -9,6 +9,7 @@
  *	code, is my own original work.
  */
 #include <avr/io.h>
+#include <time.h>
 #include "shiftregister_columns.h"
 #include "shiftRegister_Rows.h"
 #include "timer.h"
@@ -27,7 +28,7 @@ const unsigned char tasksSize = TASK_SIZE;
 
 
 int main(void) {
-	
+	srand(time(0));
 	TimerSet(1);
 	//initialize timer
 	TimerOn();
