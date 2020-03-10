@@ -42,7 +42,7 @@ int LED_Matrix(int state)
 		else
 		{
 			k=0;
-			if(j < 3)
+			if(j < 9)
 			{
 				j++;
 			}
