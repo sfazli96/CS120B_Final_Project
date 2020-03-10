@@ -12,7 +12,7 @@ typedef struct _lights
 	uint8_t column;
 } lights;
 
-const lights l_list[][8] =
+const lights l_list[][11] =
 {
 	// This will print out X.
 	{
