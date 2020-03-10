@@ -7,11 +7,19 @@
 
 #ifndef _LED_Matrix_H_
 #define _LED_Matrix_H_
+#include <stdio.h>
+#include <stdlib.h>
 static uint8_t i = 0;
 static uint8_t j = 0;
 static uint16_t k = 0;
 static uint8_t STATE = 0;
 enum LEDMatrix{display};
+
+int Get_Num() {
+	int num;
+	num = (rand() % 11);
+	return num;
+}// Get_Num  
 
 int LED_Matrix(int state)
 {
@@ -42,9 +50,10 @@ int LED_Matrix(int state)
 		else
 		{
 			k=0;
-			if(j < 9)
+			if(j < 10)
 			{
-				j++;
+				//j++;
+				j = Get_Num();
 			}
 			else
 			{
