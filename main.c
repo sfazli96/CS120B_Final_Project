@@ -18,16 +18,19 @@
 #include "scheduler.h"
 #include "Light_array.h"
 #include "Led_matrix.h"
-//#include "snes.c"
-#define TASK_SIZE 1
+#include "lcd_display.h"
+#include "ReflexGame.h"	
 //period of timer: default 50ms
-const unsigned long tasksPeriod = 50;
-const unsigned char tasksSize = TASK_SIZE;
+
 #ifdef _SIMULATE_
 #endif
 
 
 int main(void) {
+	DDRC = 0xFF;
+	PORTC = 0x00;
+	DDRD = 0xFF;
+	PORTD = 0x00;
 	srand(time(0));
 	TimerSet(1);
 	//initialize timer
@@ -36,16 +39,35 @@ int main(void) {
 	shiftInit();
 	shift2Init();
 	//SNES_init();
-	//LCD_init();
-	static task task1;
-	task *tasks[] = { &task1 };
+	LCD_init();
+	static task task1, task2, task3, task4 ;
+	task *tasks[] = { &task1, &task2, &task3, &task4 };
 	const unsigned short numTasks = sizeof(tasks)/sizeof(task*);
 
 	// Task 1 (Will show an output on the LED Matrix)
 	task1.state = display;//Task initial state.
-	task1.period = 50;//Task Period.
+	task1.period = 1;//Task Period.
 	task1.elapsedTime = task1.period;//Task current elapsed time.
 	task1.TickFct = &LED_Matrix;//Function pointer for the tick.
+	
+	// Task 2 (Will show the LCDDisplay of the score)
+	task2.state = MENU;
+	task2.period = 100;
+	task2.elapsedTime = task2.period;
+	task2.TickFct = &LCD_Display;
+	
+	// Task 3 (Game Logic)
+	task3.state = Menu;
+	task3.period = 100;
+	task3.elapsedTime = task3.period;
+	task3.TickFct = &reflexGame;
+	
+	// SNES Controller 
+	task4.state = SNES_LISTEN;
+	task4.period = 100;
+	task4.elapsedTime = task4.period;
+	task4.TickFct = &snes;
+	
 	
 	// Set the timer and turn it on
 	TimerSet(1);
@@ -67,6 +89,3 @@ int main(void) {
 	}
 	return 0;
 }
-
-
-
