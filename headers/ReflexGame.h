@@ -161,26 +161,34 @@ int reflexGame(int State)
 			counter = 0;
 		}
 		break;
-		case GameOver:
-		/*
-		if(PressA == 128)  
+		case GameOver:    // Where u lose
+		PressA = SNES_button();
+		if(PressA == 'A')  
 		{
 			State = Start_Game;
+			lives = 3;
+			score = 0;
+			LCD_ClearScreen();
 		}
 		else
 		{
 			State = GameOver;
 		}
-		*/
 		break;
 		case EndGame:
-		if(PressA == 128) 
+		PressA = SNES_button();
+		LCD_Cursor(17);
+		LCD_WriteData(PressA);
+		if(PressA == 'A') 
 		{
 			State = Start_Game;
+			lives = 3;
+			score = 0;
+			LCD_ClearScreen();
 		}
 		else 
 		{
-			State = Game_Menu;
+			State = EndGame;
 		}
 		break;
 		default:
