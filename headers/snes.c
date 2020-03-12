@@ -2,9 +2,11 @@
  * snes_test.c
  *
  * Created: 3/3/2020 3:35:02 PM
- * Author : sfazl
+ * Author : sfazl001 Sameh Fazli
+ * CS120b
  */ 
-
+#ifndef _snes_H_
+#define _snes_H_
 
 #define SNES_CLOCK  PORTA0 
 #define SNES_LATCH  PORTA1
@@ -74,3 +76,25 @@ unsigned short SNES_Read(){
     }
     return snes_pressed;
 }
+
+unsigned char SNES_button()
+{
+	unsigned short button;
+	unsigned char out = ' ';
+	button = (SNES_Read());
+	if((button & 16) == 16) out = 'R'; //"R";
+	if((button & 32) == 32) out = 'L'; //"L";
+	if((button & 64) == 64) out = 'X'; //"X";
+	if((button & 128) == 128) out = 'A'; //"A";
+	if((button & 256) == 256) out = 'r'; //"Right";
+	if((button & 512) == 512) out = 'l'; //"Left";
+	if((button & 1024) == 1024) out = 'D'; //"Down";
+	if((button & 2048) == 2048) out = 'U'; //"Up";
+	if((button & 4096) == 4096) out = 'S'; //"Start";
+	if((button & 8192) == 8192) out = 's'; //"Select";
+	if((button & 16384) == 16384) out = 'Y'; //"Y";
+	if((button & 32768) == 32768) out = 'B'; //"B";
+	return out;
+}
+
+#endif
