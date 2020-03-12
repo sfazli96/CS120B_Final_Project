@@ -100,7 +100,7 @@ const lights l_list[][11] =
 		{0x18, 0x80}
 	},
 
-	// This is for the D-Pad Down that will print out down.
+	// This is for the D-Pad Down that will print out down arrow.
 	{
 		{0x18, 0x01},
 		{0x3C, 0x02},
@@ -112,7 +112,7 @@ const lights l_list[][11] =
 		{0x18, 0x80}
 	},
 
-	// This is for the D-Pad Left that will print out left.
+	// This is for the D-Pad Left that will print out left arrow.
 	{
 		{0x08, 0x01},
 		{0x0C, 0x02},
@@ -124,7 +124,7 @@ const lights l_list[][11] =
 		{0x08, 0x80}
 	},
 
-	// This is for the D-Pad right that will print out right.
+	// This is for the D-Pad right that will print out right arrow.
 	{
 		{0x10, 0x01},
 		{0x30, 0x02},
